@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Yonny Rondón">
+
+    <title>AlwaysMusic</title>
+
+    <!-- BOOTSTRAP CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- BOOTSTRAP JS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <!-- ICONO DE LA PESTAÑA DE NAVEGADOR -->
+    <link rel="shortcut icon" href="https://em-content.zobj.net/source/facebook/158/multiple-musical-notes_1f3b6.png"
+        type="image/x-icon">
+
+</head>
+
+<body
+    background="https://e1.pxfuel.com/desktop-wallpaper/238/555/desktop-wallpaper-blue-music-notes-x-1024x768-resolution-backgrounds-blue-music-notes-background.jpg">
+
+    <header class="py-5">
+        <h1 class="text-center" style="color: black;"><strong>𝄞 Always Music 𝄞</strong></h1>
+    </header>
+
+    <main class="container pb-5">
+        <!-- SE AGREGA EL FORMULARIO DE REGISTRO DE USUARIOS -->
+        <section class="sect-add-users">
+            <form id="formAddUser" class="w-50 mx-auto">
+                <div>
+                    <label for="nombreAddUser" class="form-label"><b>Nombre:</b></label>
+                    <input type="text" class="form-control" name="nombre" id="nombreAddUser" required>
+
+                </div>
+                <div>
+                    <label for="rutAddUser" class="form-label"><b>Rut:</b></label>
+                    <input type="text" class="form-control" name="rut" id="rutAddUser" required>
+                </div>
+                <div>
+                    <label for="cursoAddUser" class="form-label"><b>Curso:</b></label>
+                    <input type="text" class="form-control" name="curso" id="cursoAddUser" required>
+                </div>
+                <div>
+                    <label for="nivelAddUser" class="form-label"><b>Nivel:</b></label>
+                    <input type="text" class="form-control" name="nivel" id="nivelAddUser" required>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <input type="submit" class="btn btn-success my-4" value="Agregar">
+                </div>
+            </form>
+
+        </section>
+
+        <!-- SE AGREGA EN LISTA UNA TABLA DE LOS USUARIOS EXISTENTES -->
+        <section class="sect-list-users">
+            <h2 class="text-center py-4" style="color: black;"><strong>... Tabla de alumnos registrados ...</strong>
+            </h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">N° orden</th>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Rut</th>
+                        <th scope="col">Curso</th>
+                        <th scope="col">Nivel</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody id="table-body-users">
+
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <!-- Modal UPDATE -->
+    <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="updateModalLabel"><strong>Formulario de actualización</strong></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- INICIO FORMULARIO UPDATE -->
+
+                    <form id="formUpdateUser" class="w-50 mx-auto">
+                        <div>
+                            <label for="idUpdateUser" class="form-label">ID:</label>
+                            <input type="text" class="form-control" name="id" id="idUpdateUser" required disabled>
+                        </div>
+                        <div>
+                            <label for="nombreUpdateUser" class="form-label">Nombre:</label>
+                            <input type="text" class="form-control" name="nombre" id="nombreUpdateUser" required>
+                        </div>
+                        <div>
+                            <label for="rutUpdateUser" class="form-label">Rut:</label>
+                            <input type="text" class="form-control" name="rut" id="rutUpdateUser" required>
+                        </div>
+                        <div>
+                            <label for="cursoUpdateUser" class="form-label">Curso:</label>
+                            <input type="text" class="form-control" name="curso" id="cursoUpdateUser" required>
+                        </div>
+                        <div>
+                            <label for="nivelUpdateUser" class="form-label">Nivel:</label>
+                            <input type="text" class="form-control" name="nivel" id="nivelUpdateUser" required>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <input type="submit" class="btn btn-warning my-2" data-bs-dismiss="modal" value="Actualizar">
+                        </div>
+                    </form>
+                    <!-- FIN FORMULARIO UPDATE -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            let users = await getUsers();
+            loadTableUsers(users)
+        });
+
+        let modalUser = document.getElementById("updateModal")
+
+        let formAddUser = document.getElementById("formAddUser");
+
+        formAddUser.addEventListener("submit", async (event) => {
+            try {
+                event.preventDefault();
+                let user = await addUser();
+
+                if (!user) {
+                    alert("no fue posible crear al usuario.");
+                } else {
+                    alert(`Usuario ${user.nombre} creado con id: ${user.id}`);
+                    let users = await getUsers();
+                    loadTableUsers(users);
+                }
+
+            } catch (error) {
+                alert("Error al intentar agregar un nuevo usuario.")
+            }
+        });
+
+        let addUser = async () => {
+            try {
+                const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+
+                const raw = JSON.stringify({
+                    "nombre": nombreAddUser.value,
+                    "rut": rutAddUser.value,
+                    "curso": cursoAddUser.value,
+                    "nivel": nivelAddUser.value
+                });
+
+                const requestOptions = {
+                    method: "POST",
+                    headers: myHeaders,
+                    body: raw,
+                    redirect: "follow"
+                };
+
+                let response = await fetch("/api/users", requestOptions);
+
+                if (response.status == 201) {
+                    let data = await response.json();
+                    let user = data.user;
+                    return user;
+                } else {
+                    return false;
+                }
+
+            } catch (error) {
+                return false;
+            }
+
+        }
+
+        const getUsers = async () => {
+            try {
+                let response = await fetch("/api/users");
+                let data = await response.json();
+
+                let users = data.usuarios;
+
+                return users;
+
+            } catch (error) {
+                alert("Error al obtener los usuarios desde la bd.");
+            }
+        };
+
+        const deleteUser = async (id) => {
+            try {
+
+                if (confirm("Estás seguro de eliminar al usuario con id: " + id)) {
+                    let response = await fetch("/api/users/" + id, {
+                        method: "DELETE"
+                    });
+
+                    let data = await response.json();
+
+                    alert(data.message);
+
+                    let users = await getUsers();
+                    loadTableUsers(users)
+                }
+
+            } catch (error) {
+                alert("Error al obtener los usuarios desde la bd.");
+            }
+        }
+
+        let loadTableUsers = (users) => {
+            let bodyTableUsers = document.getElementById("table-body-users");
+
+            let rows = "";
+
+            users.forEach((user, index) => {
+                rows += `
+                <tr>
+                    <th scope="row">${index + 1}</th>
+                    <td>${user.id}</td>
+                    <td>${user.nombre}</td>
+                    <td>${user.rut}</td>
+                    <td>${user.curso}</td>
+                    <td>${user.nivel}</td>
+                    <td>
+                        <button class="btn btn-warning" 
+                        onclick="preUpdateUser(${user.id})"
+                        data-bs-toggle="modal" data-bs-target="#updateModal"
+                        >Actualizar</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger" 
+                        onclick="deleteUser(${user.id})">Eliminar</button>
+                    </td>
+                </tr>
+                `
+            });
+
+            bodyTableUsers.innerHTML = rows;
+        }
+
+        // FUNCIÓN QUE CARGA LOS DATOS DEL USUARIO AL FORMULARIO UPDATE DENTRO DEL MODAL. //
+        const loadFormUpdateModal = (usuario) => {
+            idUpdateUser.value = usuario.id;
+            nombreUpdateUser.value = usuario.nombre;
+            rutUpdateUser.value = usuario.rut;
+            cursoUpdateUser.value = usuario.curso;
+            nivelUpdateUser.value = usuario.nivel;
+        };
+
+        // Funcion encargada de traer los datos del usuario y cargarlos en el formulario modal. //
+        const preUpdateUser = async (id) => {
+            try {
+                let response = await fetch('/api/users/' + id)
+                let data = await response.json();
+
+                let { usuario } = data;
+
+                loadFormUpdateModal(usuario);
+
+            } catch (error) {
+                alert("Error al obtener información del usuario que se quiere actualizar.");
+            }
+        }
+
+        let formUpdateUser = document.getElementById("formUpdateUser");
+
+        formUpdateUser.addEventListener("submit", async (event) => {
+            try {
+                event.preventDefault();
+
+                const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+
+                const raw = JSON.stringify({
+                    id: idUpdateUser.value,
+                    nombre: nombreUpdateUser.value,
+                    rut: rutUpdateUser.value,
+                    curso: cursoUpdateUser.value,
+                    nivel: nivelUpdateUser.value,
+                });
+
+                const requestOptions = {
+                    method: "PUT",
+                    headers: myHeaders,
+                    body: raw,
+                    redirect: "follow",
+                };
+
+                let response = await fetch("/api/users", requestOptions);
+
+                if (response.status == 201) {
+                    let data = await response.json();
+                    let { user } = data;
+
+                    alert(`Actualización del usuario con ID: ${user.id} con éxito.`);
+                    let users = await getUsers();
+                    loadTableUsers(users);
+
+                    formUpdateUser.reset(); // Se limpia el formulario //
+
+                    // CERRAR MODAL USANDO JS //
+                    // modalUser.classList.add("show")
+
+                } else {
+                    alert("Error al intentar actualizar al usuario.");
+                }
+            } catch (error) {
+                alert("Error al intentar actualizar al usuario.");
+            }
+        });
+
+    </script>
+
+</body>
